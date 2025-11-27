@@ -1,5 +1,6 @@
 \documentclass{article}
-\usepackage{statrep}
+\usepackage[utf8]{inputenc}
+\usepackage[SASmode=Server,figname=Illustration]{../benchmark/statrep}
 \begin{document}
 
 This document is named \texttt{example.tex}. 
@@ -46,10 +47,13 @@ run;
   The line insures that ODS Graphics are enabled.
 
 \begin{Sascode}[store=class]
+%*;	OPTIONS MPRINT MLOGIC SYMBOLGEN;
 %*; ods graphics on;
+%startlog(nameoflog)
 proc reg;
     model weight = height age;
 run;
+%endlog(store=0,range=_n_ <= 10)
 \end{Sascode}
 
   The \texttt{Listing} and \texttt{Graphic} tags convey information to
@@ -58,13 +62,16 @@ run;
   Additionally, they specify the names of the output files to create
   and which ODS objects to capture.
 
-\Listing[store=class,
-         caption={Regression Analysis}]{rega}
+\Listing[store=class,dest=latex,
+         caption={Regression Analysis LaTeX}]{rega}
 
 \Graphic[store=class, 
          caption={Graphs for Regression Analysis}]{regb}
 
+\Listing[store=class,
+		caption={Regression Analysis listing}]{rega}
 In this short example only the defaults are used. That is, all output
 objects are selected and displayed.
 
+\Listing[caption={Log de la proc reg}]{nameoflog}
 \end{document}

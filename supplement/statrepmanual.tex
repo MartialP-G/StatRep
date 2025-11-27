@@ -109,10 +109,14 @@ reproducible research results:
 \item Create your \LaTeX\ source file so that it contains your text, data, and SAS code.
 
 \item Compile the document with pdf\LaTeX. You can use a LaTeX-aware
-      editor such as \TeX works, or you can use the command-line command \Code{pdflatex}.
-      This step generates the SAS program that is needed to produce the results.
-      If the name of your document is \textit{myarticle.tex}, the name of the generated SAS
-      program is \textit{myarticle\_SR.sas} by default.
+editor such as \TeX works, or you can use the command-line command \Code{pdflatex}.
+This step generates the necessary SAS program that is needed to produce the results.
+If the name of your document is \textit{myarticle.tex}, the names of the generated SAS
+programs will be  \textit{myarticle\_SR.sas} and   \textit{myarticle\_SR\_preambule.sas}  by default.
+\begin{description}
+	\item[myarticle\_SR.sas] Begins with by a  call to  \Code{preambule} SAS file,  then the cleaning subdirectory, and then then aggregate SAS code present in the \LaTeX file.
+	\item[myarticle\_SR\_preambule.sas] mainly contains custom variables (see section \ref{custom}) and a call to the \Code{statrep\_macros.sas} macro files.
+\end{description}
 
 \item Execute the SAS program to capture your output.
 
@@ -186,6 +190,11 @@ For complete step-by-step instructions for installation, see appendix \ref{insta
      \item \Code{resetby=} specifies that the counter for output numbering be reset with
      each change in the specified counter value. For example, if \Code{resetby=chapter},
      all output numbering is reset when the chapter value changes.\index{resetby= option}
+     
+     \item \Code{SASmode=WorkStation} or \Code{SASmode=Server} change the current path definition.
+     For Workstation, the \Code{rootdir} or current path is ".", for Server, the current path is "\&currentpath", obtained from 
+     "\&\_SASPROGRAMFILE" SAS macro variable.
+     \index{SASmode= option}
      \end{itemize}
 
      The options \Code{figname=} and \Code{resetby=} are not used directly by the \StatRep
@@ -1320,12 +1329,30 @@ the following settings used by the \StatRep package.
 
      \item[\cs{SRverbfont}] specifies the font to use for code within \Code{Datastep} and
      \Code{Sascode} blocks. The default is \cs{ttfamily}\cs{bfseries}
-     (\texttt{\textbf{typewriter text, bold}}).
+     (\texttt{\textbf{typewriter text, bold}}).  
      \index{verbatim font}
+   
+    
+     \item[\cs{SR@encoding}] specifies the encoding to SAS output text files (\texttt{UTF-8} or \texttt{WLATIN1}) (The \Code{SASencodingOutput} SAS macro variable). By default, this value utf8 or define from the \Code{inputenc}option package.
+     \index{Encoding}
 
      \end{description}
 
-  \chapter{About the Program Preamble}
+ \chapter{Character Encoding (\texttt{SASencodingOutput})}
+ 
+ The \texttt{statrep} package automatically manages character encoding to ensure compatibility between your \LaTeX{} source document and the generated SAS output.
+ 
+ \paragraph{Encoding Logic}
+     \index{Encoding}
+ The package operates on the following priority:
+ \begin{enumerate}
+ 	\item \textbf{Automatic Detection}: The package checks if the \texttt{inputenc} package is loaded. If present, \texttt{statrep} retrieves the active \LaTeX{} encoding (e.g., \texttt{utf8}, \texttt{latin1}, \texttt{ansinew}) and maps it to the corresponding SAS output encoding (\texttt{UTF-8} or \texttt{WLATIN1}). This ensures seamless handling of special characters and accents.
+ 	\item \textbf{Default Fallback}: If the \texttt{inputenc} package is not detected, the package defaults to using the modern standard UTF-8 for all SAS output files.
+ 	\item \textbf{Manual Override}: The encoding can be manually forced using the package option \texttt{SASencodingOutput}. Supported values include \texttt{utf8} and \texttt{wlatin1}.
+ \end{enumerate}
+ 
+
+ \chapter{About the Program Preamble}
 
 The \StatRep package automatically writes a preamble to the generated program and a preamble file.
 
@@ -1340,7 +1367,7 @@ there is nothing you need to do---your generated program contains the lines that
 The preamble in the generated program includes the preamble file and deletes the contents of the
 output directories (\Code{lst}, \Code{tex}, and \Code{png}, by default) so that obsolete files are
 not included in the document.
-Figure \ref{fig:pgmpreamble} shows an example of the preamble lines
+Figures \ref{fig:pgmpreambleW} and \ref{labelfig:pgmpreambleS} show an example of the preamble lines
 that are written to the generated program.
 \begin{figure}[H]
 \begin{snugshade}
@@ -1357,14 +1384,33 @@ that are written to the generated program.
 
 %include "report_SR_preamble.sas" /nosource;
 /* Remove all output files. */
-%hostdel;
+%cleandir(&currentpath, tex, tex);
+%cleandir(&currentpath, png, png);
+%cleandir(&currentpath, lst, lst);
 
 /* Start program with a null title. */
 title;
 \end{verbatim}
 \end{snugshade}
-\caption{Generated SAS Program Preamble}\label{fig:pgmpreamble}
+\caption{The start of the SAS Program using the SASmode=Workstation}\label{fig:pgmpreambleW}
 \end{figure}
+
+\begin{figure}[H]
+	\begin{snugshade}
+		\begin{verbatim}
+filename current "&_SASPROGRAMFILE"; 
+		*** get the full name of the file;
+%let fullpath = %sysfunc(pathname(current));
+%let currentpath = %substr(&fullpath, 1, %length(&fullpath)
+		 - %length(%scan(&fullpath, -1, '/\\'))-1 );
+%put &fullpath &currentpath;
+%let rc = %sysfunc(dlgcdir(&currentpath));
+%include "&currentpath/example_SR_preamble.sas" /nosource;
+		\end{verbatim}
+	\end{snugshade}
+	\caption{Changes to the start of the SAS program using the SASMODE=SERVER option}\label{fig:pgmpreambleS}
+\end{figure}
+
 
   The external preamble file sets defaults, includes
   the output-capture macros, and creates the output directories if they do not exist.
@@ -1381,7 +1427,6 @@ title;
  See the statrep package documentation and the file
  statrep.cfg for information on these settings.
  */
-
 
 /* Set and invoke macro variable defaults. */
 %let defaultlinesize=80;
@@ -1712,8 +1757,8 @@ capturing output.
   separated by a comma (,):
 
   \begin{description}
-  \item[\Code{code=}] specifies whether program code in the SAS log is included.
-  By default, code is captured (\Code{code=1}). Set \Code{code=0} to exclude code.
+  \item[\Code{store=}] specifies whether program code in the SAS log is included.
+  By default, code is captured (\Code{store=1}). Set \Code{store=0} to exclude code.
   \item[\Code{range=}] specifies a Boolean expression to select
   certain observations. For example, you can specify \Code{range=\_n\_ <= 5 }
   to select the first five lines.  You can specify
@@ -2206,15 +2251,15 @@ NOTE: The SAS System stopped processing this step because of errors.
   procedure code is executed, and the \Code{\%endlog} macro closes the file.
 
   To omit the PROC IML code from the captured log output,
-  specify the \Code{code=0} option in the \Code{\%endlog} macro as follows:
+  specify the \Code{store=0} option in the \Code{\%endlog} macro as follows:
 
 \begin{snugshade}
 \begin{verbatim}
-   %*; %endlog(code=0);
+   %*; %endlog(store=0);
 \end{verbatim}
 \end{snugshade}
 
-   With the \Code{code=0} option specified, the captured log output is
+   With the \Code{store=0} option specified, the captured log output is
    displayed as shown in Figure \ref{lognoproc}.
 
 \begin{figure}[H]
@@ -2242,7 +2287,7 @@ NOTE: The SAS System stopped processing this step because of errors.
 
 \begin{snugshade}
 \begin{verbatim}
-   %*; %endlog(code=0, range=_n_ > 6 and _n_ le 24);
+   %*; %endlog(store=0, range=_n_ > 6 and _n_ le 24);
 \end{verbatim}
 \end{snugshade}
   With the both options specified, the captured log output is displayed as

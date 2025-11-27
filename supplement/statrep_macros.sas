@@ -1,4 +1,4 @@
-                         /*---------------------------------------------*/
+ï»¿                         /*---------------------------------------------*/
                          /* The WRITE macro displays one or more pieces */
                          /* of output (tables, notes, graphs, and so    */
                          /* on) that were captured into an ODS document */
@@ -347,7 +347,7 @@ proc document name=&store;
    run; quit;
 
 %if &syserr > 4 %then %let error = 1; %if &error %then %goto veryend;
-ods listing;
+ods listing ;
 
 data _null_;
    call symputx('ls', getoption('ls'), 'L');
@@ -568,7 +568,7 @@ data _ads_doclist(drop=i p);
    English  German       Spanish      French                Italian
    Batch    Batch        Batch        Traitement par lots   Batch
    Crosstab Kreuztabelle TablaCruzada Table a double entr*e Campi incr.
-   Dir      Dir          Dir          Rép.                  Dir
+   Dir      Dir          Dir          Rï¿½p.                  Dir
    File     file         Archivo      Fichier               File
    Graph    Grafik       Gr*fico      Graphique             Grafico
    Note     Hinweis      Nota         Note                  Nota
@@ -945,13 +945,15 @@ options source &savenote;
       %end;
       %else %do;
         %if %index(&dest, listing) %then %do;
-          ods listing file="&listingdir/_tmp";
-        %end;
+		  FILENAME LISTTMP "&listingdir/_tmp" ENCODING="&SASencodingTex.";
+          ODS LISTING FILE=LISTTMP ;        
+		%end;
         %if %index(&dest, latex) %then %do;
           ods tagsets.statrep style=&latexstyle
             file="&latexdir/&fname&jh..tex" (notop nobot)
             stylesheet="&rootdir/sas.sty"
-            newfile=output ;
+            newfile=output
+			encoding="&SASencodingTex.";
         %end;
       %end;
       %if not %index(&flow, notes) %then %do; options nonotes; %end;
@@ -985,7 +987,7 @@ options source &savenote;
             call symputx('kl', kl, 'L');
             put 'Note: Writing Listing file  : ' fn;
           end;
-          file x filevar=fn nopad;
+          file x filevar=fn nopad ENCODING="&SASEncodingTex.";
           l = length(line);
           put line $varying. l;
           if _error_ then call symputx('error', '1', 'L');
@@ -1391,7 +1393,8 @@ data _null_; rc = fdelete('__f'); run;
 %let __ls = %sysfunc(getoption(ls));
 
 options nostimer nosource2 nosource;
-proc printto log="&listingdir/__tmp" new; run;
+FILENAME LOGTMP "&listingdir/__tmp" ENCODING='UTF-8';
+proc printto log=LOGTMP new ; run;
 %mend;
 
 
@@ -1415,8 +1418,10 @@ proc printto log=log; run;
 
 options stimer source2 source;
 
+FILENAME LOGTMP "&listingdir/__tmp" ENCODING='UTF-8';
+FILENAME LOGOUT "&listingdir/&__fname..lst" ENCODING='UTF-8';
 data _null_;
-   infile "&listingdir/__tmp" lrecl=%eval(&__ls+4) pad;
+   infile LOGTMP lrecl=%eval(&__ls+4) pad;
    input line $char&__ls..;
    if anycntrl(line) = 0;
    %if &store %then %do;
@@ -1427,7 +1432,7 @@ data _null_;
               compress(line, ' 0123456789') =: '+');
       %end;
    if &range;
-   file "&listingdir/&__fname..lst" lrecl=%eval(&__ls+4);
+   file LOGOUT lrecl=%eval(&__ls+4);
    put line $char&__ls..;
    run;
 

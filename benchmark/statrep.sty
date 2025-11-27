@@ -11,14 +11,35 @@
 %%             The package helps to support reproducible research.
 %% 
 %% E-mail: tim.arnold@sas.com
+%% modified Martial Phélippé-Guinvarc'h - Path Resolution Mode
 %% ----------------------------------------------------------------
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2015/09/15 v1.07 The statrep package]
+\ProvidesPackage{statrep}[2025/11/26 v1.08 The statrep package - Path Resolution Mode SASServer/SASWorkstation and encoding]
 \RequirePackage{verbatim}
 \RequirePackage{graphicx}
-\RequirePackage{xkeyval}
-\RequirePackage{calc}
 \RequirePackage{ifthen}
+\RequirePackage{calc}
+\RequirePackage{etoolbox} % Need for string comparison (ifstrequal)
+\RequirePackage{xkeyval}
+\newif\ifSASServer %add MPG
+\SASServerfalse % Default is Workstation
+% Define the ‘SASmode’ key for the ‘statrep’ package
+\DeclareOptionX{SASmode}{\setkeys{statrep}{SASmode=#1}}
+\define@key{statrep}{SASmode}{%
+  \ifstrequal{#1}{Server}{% if value is 'Serveur'
+    \SASServertrue
+    \PackageInfo{statrep}{Mode SAS: Serveur (utilise \string&\string_SASPROGRAMFILE).}
+  }{% If value is not 'Serveur', we control if it is 'WorkStation'
+    \ifstrequal{#1}{WorkStation}{%
+      \SASServerfalse
+      \PackageInfo{statrep}{Mode SAS: WorkStation (use ./).}
+    }{%
+      % If value is unknown, we print an warning
+      \SASServerfalse
+      \PackageWarning{statrep}{Unknown value for SASmode (#1). Default use of WorkStation (uses ./).}
+    }%
+  }%
+}
 \newif\ifSR@generate\SR@generatetrue
 \DeclareOptionX{generate}[true]{\@nameuse{SR@generate#1}}
 \DeclareOptionX{color}[true]{%
@@ -29,6 +50,25 @@
 \DeclareOptionX{figname}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \DeclareOptionX{resetby}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \ProcessOptionsX
+\def\statrep@map@sas@encoding#1{%
+ \def\SR@encoding{utf-8}
+ \ifstrequal{#1}{utf8}{\def\SR@encoding{utf-8}}
+ \ifstrequal{#1}{utf8x}{\def\SR@encoding{utf-8}}
+%  latin1, latin9, ansinew, etc. is mapped to wlatin1
+ \ifstrequal{#1}{latin1}{\def\SR@encoding{wlatin1}}%
+ \ifstrequal{#1}{latin9}{\def\SR@encoding{wlatin1}}%
+ \ifstrequal{#1}{ansinew}{\def\SR@encoding{wlatin1}}%
+}
+\AtBeginDocument{%
+\@ifpackageloaded{inputenc}{%
+      \statrep@map@sas@encoding{\inputencodingname}%
+      \PackageInfo{statrep}{Encodind LaTeX ({\inputencodingname}) detected and mapped to SAS: 
+	  \SR@encoding.}
+    }{%
+      % Sinon, on garde le défaut utf-8.
+      \PackageInfo{statrep}{inputenc unfund. Default SAS encoding: \SR@encoding.}
+    }
+}
 \IfFileExists{sas.sty}
   {\RequirePackage{sas}}
   {\relax}
@@ -51,7 +91,6 @@
 \newcounter{SR@totallines}\setcounter{SR@totallines}{0}
 \newcounter{SR@multifilecount}\setcounter{SR@multifilecount}{0}
 \newboolean{SR@multifile}\setboolean{SR@multifile}{false}
-
 \begingroup\catcode`\#=12\gdef\SR@hashchar{#}\endgroup
 \define@boolkeys{SR}[SR@]{display,program,continued}[true]{}
 \define@cmdkeys{SR}[SR@]{caption,first,last}{}
@@ -72,11 +111,15 @@
    height   = \@empty, pagesize = \@empty}{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Edit this line to point to the location of the StatRep macros.
-\def\SRmacropath{statrep_macros.sas}
+\def\SRmacropath{\SRrootdir/statrep_macros.sas} %Modified MPG
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%    The following statements define line size, page size, graphic resolution,
 %%    and also specify the default ODS output style:
-\def\SRrootdir{.}
+\ifSASServer
+	  \def\SRrootdir{&currentpath}
+	\else
+		\def\SRrootdir{.}
+\fi
 \def\SRlinesize{80}
 \def\SRpagesize{500}
 \def\SRdpi{300}
@@ -136,6 +179,7 @@
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultdpi=\SRdpi;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let odsgraphopts=\SRodsgraphopts;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultdests=\SRdefaultdests;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let SASencodingTex=\SR@encoding;}
   \SR@writepgm\SR@tempfile@stream{}
   \SR@writepgm\SR@tempfile@stream{options nodate nonumber}
   \SR@writepgm\SR@tempfile@stream{ls=&defaultlinesize ps=&defaultpagesize}
@@ -148,6 +192,14 @@
   \immediate\closeout\SR@tempfile@stream
   \immediate\openout\SR@program@stream\SRprogramname
   \SR@writepgm\SR@program@stream{\SR@preambletext}
+  \ifSASServer
+   \SR@writepgm\SR@program@stream{filename current "&_SASPROGRAMFILE"; *** get the full name of the file;}
+   \SR@writepgm\SR@program@stream{\@percentchar let fullpath = \@percentchar sysfunc(pathname(current));}
+   \SR@writepgm\SR@program@stream{\@percentchar let currentpath = \@percentchar substr(&fullpath, 1, \@percentchar length(&fullpath) -
+                                    \@percentchar length(\@percentchar scan(&fullpath, -1, '/\\'))-1 );} 
+   \SR@writepgm\SR@program@stream{\@percentchar put &fullpath &currentpath;}
+   \SR@writepgm\SR@program@stream{\@percentchar let rc = \@percentchar sysfunc(dlgcdir(&currentpath));}
+  \fi
   \SR@writepgm\SR@program@stream{\@percentchar include "\SRrootdir/\SRpreamblename" /nosource;}
   \SR@writepgm\SR@program@stream{/* Remove all output files. */}
   \SR@writepgm\SR@program@stream{\SRsasprogramline}

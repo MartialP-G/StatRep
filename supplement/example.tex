@@ -36,6 +36,30 @@ data one;
 run;
 \end{Datastep}
 
+
+Example of transfert of SAS parameters or results to \LaTeX :
+
+\begin{Sascode}
+	data test;
+	mydatea = '01JAN2024'd;
+	mydateb = '01JAN2024'd;
+	smallnum = 0.00523;
+	mediunnum = 1234.56;
+	largenum = 456789.12;
+	verylarge = 12345678.90;
+	%STATREPResults(mydatea, WEEKDATE.);
+	output;
+	run;
+	
+	data _null_;
+	set test (drop=mydatea); *don''t replace mydatea;
+	%STATREPAllResults();
+	run;
+\end{Sascode}
+
+Mydate (a) is equal \mydatea, (b) is equal to \mydateb{} and large numerical value is equal to \largenum.
+
+
   The code in the \texttt{Sascode} environment is parsed before it is
   written to the generated SAS program. For example, lines that begin with the string
   \texttt{\%*;} are written to the SAS program and are not displayed in the 
@@ -46,7 +70,7 @@ run;
   in the \LaTeX\ source file and in the generated SAS program. 
   The line insures that ODS Graphics are enabled.
 
-\begin{Sascode}[store=class]
+\begin{Sascode}[store=REGa]
 %*;	OPTIONS MPRINT MLOGIC SYMBOLGEN;
 %*; ods graphics on;
 %startlog(nameoflog)
@@ -62,14 +86,14 @@ run;
   Additionally, they specify the names of the output files to create
   and which ODS objects to capture.
 
-\Listing[store=class,dest=latex,
-         caption={Regression Analysis LaTeX}]{rega}
+\Listing[store=REG,dest=latex,
+         caption={Regression Analysis LaTeX}]{REGa}
 
-\Graphic[store=class, 
-         caption={Graphs for Regression Analysis}]{regb}
+\Graphic[store=REG, 
+         caption={Graphs for Regression Analysis}]{REGb}
 
-\Listing[store=class,
-		caption={Regression Analysis listing}]{rega}
+\Listing[store=REG,dest=listing,
+		caption={Regression Analysis listing}]{REGc}
 In this short example only the defaults are used. That is, all output
 objects are selected and displayed.
 

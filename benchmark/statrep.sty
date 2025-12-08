@@ -72,6 +72,7 @@
 \IfFileExists{sas.sty}
   {\RequirePackage{sas}}
   {\relax}
+\IfFileExists{\jobname _VarSAStoTex.tex}{\input{\jobname _VarSAStoTex.tex}}{}
 \RequirePackage{longfigure}
 \ifSR@generate\def\SR@writepgm{\immediate\write}
 \else\let\SR@writepgm\@gobbletwo
@@ -132,8 +133,8 @@
 \def\SRlistingdir{\SRrootdir/lst}
 \def\SRlatexdir{\SRrootdir/tex}
 \def\SRdefaultdests{listing}
-\def\SRprogramname{\jobname_SR.sas}
-\def\SRpreamblename{\jobname_SR_preamble.sas}
+\edef\SRprogramname{\jobname_SR.sas}
+\edef\SRpreamblename{\jobname_SR_preamble.sas}
 \def\SRmacroinclude{\@percentchar include "\SRmacropath" /nosource;}
 \def\SRsasprogramline{%
 \@percentchar cleandir(\SRrootdir, tex, tex);^^J%
@@ -192,13 +193,22 @@
   \immediate\closeout\SR@tempfile@stream
   \immediate\openout\SR@program@stream\SRprogramname
   \SR@writepgm\SR@program@stream{\SR@preambletext}
+  \SR@writepgm\SR@program@stream{FILENAME current "&_SASPROGRAMFILE"; *** get the full name of the file;}
+  \SR@writepgm\SR@program@stream{\@percentchar LET fullpath = \@percentchar sysfunc(pathname(current));}
+  \SR@writepgm\SR@program@stream{\@percentchar LET SAStoTexname = \@percentchar scan(&fullpath, -2, '/.\\');}
+  \SR@writepgm\SR@program@stream{\@percentchar IF \@percentchar index(&SAStoTexname,_SR) \@percentchar then \@percentchar DO;}
+  \SR@writepgm\SR@program@stream{\@percentchar LET SAStoTexname=\@percentchar substr(&SAStoTexname,1,\@percentchar index(&SAStoTexname,_SR)-1);}
+  \SR@writepgm\SR@program@stream{\@percentchar END;}
+  \SR@writepgm\SR@program@stream{\@percentchar LET SAStoTexname = &SAStoTexname._VarSAStoTex.tex;}
+  \SR@writepgm\SR@program@stream{\@percentchar put &SAStoTexname;}
+  \SR@writepgm\SR@program@stream{ FILENAME outtex "&SAStoTexname" ENCODING="utf-8";}
+  \SR@writepgm\SR@program@stream{ DATA _NULL_; FILE outtex LRECL=32767; RUN;}
+  \SR@writepgm\SR@program@stream{ FILENAME outtex CLEAR;}
   \ifSASServer
-   \SR@writepgm\SR@program@stream{filename current "&_SASPROGRAMFILE"; *** get the full name of the file;}
-   \SR@writepgm\SR@program@stream{\@percentchar let fullpath = \@percentchar sysfunc(pathname(current));}
-   \SR@writepgm\SR@program@stream{\@percentchar let currentpath = \@percentchar substr(&fullpath, 1, \@percentchar length(&fullpath) -
-                                    \@percentchar length(\@percentchar scan(&fullpath, -1, '/\\'))-1 );} 
-   \SR@writepgm\SR@program@stream{\@percentchar put &fullpath &currentpath;}
-   \SR@writepgm\SR@program@stream{\@percentchar let rc = \@percentchar sysfunc(dlgcdir(&currentpath));}
+	\SR@writepgm\SR@program@stream{\@percentchar let currentpath = \@percentchar substr(&fullpath, 1, \@percentchar length(&fullpath) -}
+	\SR@writepgm\SR@program@stream{   \@percentchar length(\@percentchar scan(&fullpath, -1, '/\\'))-1 );} 
+	\SR@writepgm\SR@program@stream{\@percentchar put &fullpath &currentpath;}
+	\SR@writepgm\SR@program@stream{\@percentchar let rc = \@percentchar sysfunc(dlgcdir(&currentpath));}
   \fi
   \SR@writepgm\SR@program@stream{\@percentchar include "\SRrootdir/\SRpreamblename" /nosource;}
   \SR@writepgm\SR@program@stream{/* Remove all output files. */}

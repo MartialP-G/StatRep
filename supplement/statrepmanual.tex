@@ -865,10 +865,16 @@ Female     35    0
    Female     32    0
    Female     35    0
    ;
+   
+  %LET PARAMETER=365;
+  %STATREPALLRESULTS(PARAMETER)
 \end{verbatim}
 \end{snugshade}
 \caption{Displayed \texttt{Datastep} Environment with Options}\label{fig:sd3}
 \end{figure}
+
+The file \_SAStoTex.tex, which include the command \\def\\PARAMETER{365} could be use in \LaTeX document as \verb|\PARAMETER| (see also \ref{SAStoTex} subsection).
+
 
 
 \section{Using the Sascode Environment}\label{scex}\index{Sascode environment}
@@ -1766,6 +1772,21 @@ capturing output.
   `ERROR'. Selection must be based on \Code{\_n\_} or the variable \Code{line}, which
   contains a single line of the log.
   \end{description}
+
+\section{STATREP results Macro from SAS to Tex}\label{SAStoTex}
+
+
+The \texttt{statrep} package provides SAS macros designed to export numeric and date variables directly into \LaTeX{} documents in a consistent and properly formatted way. 
+
+\begin{itemize}
+	\item Predefined \texttt{proc format} picture formats handle small numbers, large numbers, percentages, and dates.
+	\item \texttt{\%STATREPResults(variable, format)} writes a single variable to a \LaTeX{} file as a \verb|\def| command using the chosen format.
+	\item \texttt{\%STATREPAllResults()} automatically processes all numeric variables in a dataset and generates their \LaTeX{} definitions with appropriate formatting.
+	\item \texttt{\%STATREPMACROVAR(variable)} provides a convenient way to export one variable using \texttt{\%STATREPAllResults}.
+  \item All macros write the output to a file named \verb|\jobname\_SAStoTex.tex|, which can be included in your main \LaTeX{} document with \verb|\input|.
+\end{itemize}
+
+These macros make it easy to **synchronize SAS results with \LaTeX{} reports**, ensuring consistency in number formatting, dates, and scientific notation across your documents.
 
   \section{Macro Variable Defaults}\label{secdefaults}
   \index{macro variables}\index{default settings}\index{package!defaults}

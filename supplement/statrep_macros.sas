@@ -986,13 +986,15 @@ options source &savenote;
             kl + 1;
             call symputx('kl', kl, 'L');
             put 'Note: Writing Listing file  : ' fn;
+     	filename outlst "&listingdir/&fname..lst" encoding="&SASEncodingTex.";
           end;
-          file x filevar=fn nopad ENCODING="&SASEncodingTex.";
+         file outlst nopad ;
           l = length(line);
           put line $varying. l;
           if _error_ then call symputx('error', '1', 'L');
         run;
-        %if &syserr > 4 %then %let error = 1; %if &error %then %goto endit;
+        filename outlst clear;
+  		%if &syserr > 4 %then %let error = 1; %if &error %then %goto endit;
           options &savenote;
       %end;
     %end;
@@ -1525,4 +1527,77 @@ given extension to insure the directory exists and is empty of output files.;
     options &saveopts;
 %mend cleandir;
 
+
+proc format;
+    /* Format pour nombres < 100000 */
+    picture STATREPS
+        0-<100000='000 009,99' (decsep="," dig3sep=" ")
+        low-<0='000 009,99' (decsep="," dig3sep=" " prefix='-');
+    
+    /* Format pour nombres >= 100000 */
+    picture STATREPL
+        100000-high='000 000 009,99' (decsep="," dig3sep=" ")
+        low -< -100000='000 000 009,99' (decsep="," dig3sep=" " prefix='-');
+    
+    /* Format pour pourcentages/petits nombres */
+    picture STATREPC 
+        other='0 009,9900' (mult=1000000);
+    
+    /* Format date dd/mm/yyyy */
+    picture STATREPD
+        low-high='%0d/%0m/%Y' (datatype=date);
+run;
+%macro STATREPResults(variable,format);
+ filename outtex "&SAStoTexname" encoding="utf-8" ;
+ file outtex termstr=nl mod;
+ put "\def\&variable{" &variable &format '}';
+%mend;
+
+%macro STATREPAllResults();
+    array _all _numeric_;
+  filename outtex "&SAStoTexname" encoding="utf-8" ;
+   file outtex termstr=nl mod;
+    
+    do over _all;
+        a = vname(_all);
+        fmt = vformat(_all);
+        
+        /* Test si variable de type date (format date appliqué) */
+        if index(upcase(fmt),'DATE') or index(upcase(fmt),'DDMMYY') or 
+           index(upcase(fmt),'MMDDYY') or index(upcase(fmt),'YYMMDD') or
+           index(upcase(fmt),'EURDFDD') or index(upcase(fmt),'NLDATE') or
+           (_all >= 0 and _all < 100000 and mod(_all,1)=0 and 
+            vformat(_all) in ('BEST','F','') and a ne '') then do;
+            /* Vérification additionnelle : valeur dans la plage des dates SAS */
+            if _all >= -109572 and _all <= 157377 then do;
+                put '\def \' a '{' _all STATREPD. '}';
+            end;
+            else do;
+                /* Ce n'est pas une date, traiter comme nombre normal */
+                if abs(_all) >= 100000 then
+                    put '\def \' a '{' _all STATREPL. '}';
+                else if abs(_all) < 1 and _all ne . then
+                    put '\def \' a '{' _all STATREPC. '}';
+                else if _all ne . then
+                    put '\def \' a '{' _all STATREPS. '}';
+            end;
+        end;
+        /* Sinon traiter comme nombre normal */
+        else do;
+            if abs(_all) >= 100000 then
+                put '\def \' a '{' _all STATREPL. '}';
+            else if abs(_all) < 1 and _all ne . then
+                put '\def \' a '{' _all STATREPC. '}';
+            else if _all ne . then
+                put '\def \' a '{' _all STATREPS. '}';
+        end;
+    end;
+%mend;
+
+%MACRO STATREPMACROVAR(variable);
+DATA _NULL_;
+&variable = &&&variable;
+%STATREPALLRESULTS()
+;RUN;
+%MEND;
 

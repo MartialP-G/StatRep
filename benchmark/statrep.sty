@@ -199,17 +199,16 @@
   \SR@writepgm\SR@program@stream{\@percentchar IF \@percentchar index(&SAStoTexname,_SR) \@percentchar then \@percentchar DO;}
   \SR@writepgm\SR@program@stream{\@percentchar LET SAStoTexname=\@percentchar substr(&SAStoTexname,1,\@percentchar index(&SAStoTexname,_SR)-1);}
   \SR@writepgm\SR@program@stream{\@percentchar END;}
+	\SR@writepgm\SR@program@stream{\@percentchar let currentpath = \@percentchar substr(&fullpath, 1, \@percentchar length(&fullpath) -}
+	\SR@writepgm\SR@program@stream{   \@percentchar length(\@percentchar scan(&fullpath, -1, '/\\'))-1 );} 
+	\SR@writepgm\SR@program@stream{\@percentchar put &fullpath &currentpath;}
+	\SR@writepgm\SR@program@stream{\@percentchar let rc = \@percentchar sysfunc(dlgcdir(&currentpath));}
   \SR@writepgm\SR@program@stream{\@percentchar LET SAStoTexname = &SAStoTexname._VarSAStoTex.tex;}
   \SR@writepgm\SR@program@stream{\@percentchar put &SAStoTexname;}
   \SR@writepgm\SR@program@stream{ FILENAME outtex "&SAStoTexname" ENCODING="utf-8";}
   \SR@writepgm\SR@program@stream{ DATA _NULL_; FILE outtex LRECL=32767; RUN;}
   \SR@writepgm\SR@program@stream{ FILENAME outtex CLEAR;}
-  \ifSASServer
-	\SR@writepgm\SR@program@stream{\@percentchar let currentpath = \@percentchar substr(&fullpath, 1, \@percentchar length(&fullpath) -}
-	\SR@writepgm\SR@program@stream{   \@percentchar length(\@percentchar scan(&fullpath, -1, '/\\'))-1 );} 
-	\SR@writepgm\SR@program@stream{\@percentchar put &fullpath &currentpath;}
-	\SR@writepgm\SR@program@stream{\@percentchar let rc = \@percentchar sysfunc(dlgcdir(&currentpath));}
-  \fi
+
   \SR@writepgm\SR@program@stream{\@percentchar include "\SRrootdir/\SRpreamblename" /nosource;}
   \SR@writepgm\SR@program@stream{/* Remove all output files. */}
   \SR@writepgm\SR@program@stream{\SRsasprogramline}

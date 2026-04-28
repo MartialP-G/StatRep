@@ -1,13 +1,12 @@
-# Caution
+# StatRep — LaTeX Package for Reproducible SAS Documents
 
-This GitHub repository contains code to build and package the **StatRep**
-LaTeX package. If you are looking for the package itself, please download the file ``statrep.zip`` from one of these locations.
+This repository contains the source of the **StatRep** LaTeX package.
+The package is available at:
 
-  * SAS (http://support.sas.com/StatRepPackage)
-  * CTAN (http://www.ctan.org/pkg/statrep)
+* GitHub: https://github.com/MartialP-G/StatRep
+* CTAN: http://www.ctan.org/pkg/statrep
+* SAS (original): http://support.sas.com/StatRepPackage — *obsolete*
 
-You can see a brief online example here: 
-http://tiarno.github.io/StatRep/
 
 # Overview
 
@@ -16,9 +15,86 @@ and a suite of SAS macros to enable you to create dynamic documents with reprodu
 
 With **StatRep**, your analysis is fully documented and reproducible from a single source--your LaTeX document. The system automatically produces a SAS program so that both the SAS output and the SAS code that produced the output are displayed.
 
-The package provides two environments and two tags that work together to display your SAS code and results and to generate the SAS program that produces those results. The two environments (``Datastep`` and ``Sascode``) display SAS code. The two tags (``Listing`` and ``Graphic``) display SAS output.
+The package provides two environments and two tags:
 
-Full documentation is included in the distribution, available at the links provided above.
+* Environments `Datastep` and `Sascode` display SAS code.
+* Tags `Listing` and `Graphic` display SAS output.
+
+## Workflow
+
+1. Compile your `.tex` document with `pdflatex`. This generates two SAS
+   programs:
+   - `myarticle_SR.sas` — calls the preamble file, cleans output
+     directories, then runs the aggregated SAS code from your LaTeX file.
+   - `myarticle_SR_preamble.sas` — contains custom variables and a call
+     to `statrep_macros.sas`.
+2. Execute `myarticle_SR.sas` in SAS to produce the results.
+3. Recompile with `pdflatex` to include the SAS results in your document.
+   Repeat if necessary for correct framing of listings.
+
+## SAS Path Options
+
+The `SASmode` option controls how the current path is resolved:
+
+* `SASmode=WorkStation` (default): uses `.` as the root directory.
+* `SASmode=Server`: uses `&currentpath`, derived from the
+  `&_SASPROGRAMFILE` SAS macro variable. Use this for SAS Studio,
+  SAS OnDemand, or any server-based SAS environment.
+
+## SAS Result Export Macros
+
+Three macros in `statrep_macros.sas` allow you to export SAS results or
+macro variable values directly into your LaTeX document via
+`jobname_VarSAStoTex.tex`, which is loaded automatically at compile time:
+
+* `%STATREPResults(variable, format)` — exports a single variable using
+  the specified format.
+* `%STATREPAllResults()` — processes all numeric variables in a dataset
+  and generates their LaTeX definitions.
+* `%STATREPMACROVAR(variable)` — exports a single SAS macro variable.
+
+The generated file contains `\def` commands (e.g. `\def\PARAMETER{365}`)
+that can be used directly in your LaTeX document as `\PARAMETER`.
+
+## Character Encoding
+
+The package automatically maps the LaTeX `inputenc` encoding to the
+correct SAS output encoding (`UTF-8` or `WLATIN1`). If `inputenc` is not
+loaded, `UTF-8` is used by default.
+
+# Documentation
+
+* *StatRep User's Guide* (`statrepmanual.pdf`) — installation and usage
+* `quickstart.tex` — simple working example
+* `statrep.pdf` — LaTeX implementation details
+
+# License
+
+    Copyright (c) 2015 SAS Institute Inc.
+    Copyright (c) 2026 Martial Phélippé-Guinvarc'h
+
+    This work may be distributed and/or modified under the conditions of
+    the LaTeX Project Public License (LPPL), version 1.3c or later.
+    See http://www.latex-project.org/lppl.txt for details.
+
+    This work has the LPPL maintenance status 'maintained'.
+    The Current Maintainer is Martial Phélippé-Guinvarc'h
+    (Martial dot Phelippe-GuinvarcH at univ-lemans dot fr).
+
+    The original version was developed by Tim Arnold (SAS Institute).
+    This is an independent update and is not officially supported
+    by SAS Institute Inc.
+
+# Requirements
+
+* `pdfLaTeX` typesetting engine 1.30 or later
+* LaTeX packages: `verbatim`, `graphicx`, `xkeyval`, `calc`, `ifthen`,
+  `etoolbox`. Included in standard distributions (TeXLive, MiKTeX).
+* SAS 9.2 or later
+
+## Documentation 
+
+Documentation is included in the distribution, available at the links provided above.
 
   * *The StatRep User's Guide* (`statrepmanual.pdf`) includes installation instructions and details on how to use the system.
   * A simple example of using the package (`quickstart.tex`)
@@ -30,39 +106,32 @@ These SAS macros are included in this package (``statrep_macros.sas``).
 
 Limited support is provided for SAS-generated LaTeX output, using a special tagset: you can generate the tagset with the included SAS program ``statrep_tagset.sas``. 
 
-# License
 
-    Copyright (c) 2014 SAS Institute Inc.
+# Distribution Layout
 
-    Permission is granted to copy, distribute, and/or modify this software
-    under the terms of the LaTeX Project Public License (LPPL), version 1.3.
+## Files in this repository
 
-    This software is provided by SAS Institute Inc. as a service to its users.
-    It is provided 'as is', without warranty of any kind, either expressed or
-    implied, including, but not limited to, the implied warranties of
-    merchantibility and fitness for a particular purpose.
-    See http://www.latex-project.org/lppl.txt for the details of that license.
+    statrep.dtx           — package source (documentation + code)
+    statrep.ins           — install file (for MiKTeX users)
+    statrep_macros.sas    — SAS macro file
+    statrep_tagset.sas    — SAS tagset and style for LaTeX tabular output
+    README.md             — this file
 
-    This work has the LPPL maintenance status 'maintained'. 
-    The Current Maintainer of this work is Tim Arnold 
-    (tim dot arnold at sas dot com).
+## Generating the package files
 
-# Requirements
+Compile `statrep.dtx` with `pdflatex` to generate all derived files:
 
-  * ``pdfLaTeX`` typesetting engine 1.30 or later
-  * LaTeX packages: ``verbatim``, ``graphicx``, ``xkeyval``, ``calc``, ``ifthen``. These packages are contained in a standard LaTeX distribution, such as **TeXLive** or **MiKTeX**.
-  * SAS 9.2 or later
+    pdflatex statrep.dtx
 
+This produces:
+* `statrep.sty` — the LaTeX package
+* `longfigure.sty` — the longfigure package
+* `statrep.cfg` — default configuration file (edit to set your SAS macro path)
+* `statrep.pdf` — this documentation
 
-# Note on Packaging
+## Distribution layout (statrep.zip)
 
-This github repo is meant for packaging the ``StatRep`` and ``longfigure`` packages. To create the packages, 
- 1. put the ``benchmark``, ``content``, and ``supplement`` directories along with ``build.py`` into a clean working directory. 
- 2. Execute the ``build.py`` script to create a new ``build`` directory.
-
-Inside the ``build`` directory there will be subdirectories called ``ctan``, ``sas`` that contain the files to be distributed at those locations. There are also directories ``test`` and ``work`` that were used to create the new distributions.
-
-Inside the distribution directories are the zip files. For the ``sas`` distribution, the ``*.sty`` files are included so people don't have to do any extra steps. Here is the layout of the zip file for the distribution (``statrep.zip``):
+For standard distribution, the zip file is structured as follows:
 
     README
     LICENSE
@@ -70,39 +139,31 @@ Inside the distribution directories are the zip files. For the ``sas`` distribut
     statrep.ins
     statrep.sty
     longfigure.sty
+    statrep.cfg
     doc/
-        images/
         quickstart.tex
         statrepmanual.tex
-        statrepmanual.pdf -- with example.tex attached inside
+        statrepmanual.pdf
         statrep.pdf
     sas/
         statrep_macros.sas
         statrep_tagset.sas
 
-The CTAN folks don't want the extra ``*.sty`` files since they are normally just created by compiling the ``*.dtx`` file, so we omit them for the CTAN version. The layout for this version (``statrep.zip``) appears as follows:
+## CTAN layout
+
+CTAN generates the `*.sty` files from `statrep.dtx` automatically,
+so they are omitted from the CTAN submission:
 
     README
     LICENSE
     statrep.dtx
     statrep.ins
     doc/
-        images/
         quickstart.tex
         statrepmanual.tex
-        statrepmanual.pdf -- with example.tex attached inside
+        statrepmanual.pdf
         statrep.pdf
     sas/
         statrep_macros.sas
         statrep_tagset.sas
-
-The ``longfigure`` package is simple and exists only in the ``ctan`` directory. The layout of the zip file looks like this (``longfigure.zip``):
-
-    README
-    LICENSE
-    longfigure.dtx
-    longfigure.ins
-    longfigure.pdf
-
-
 

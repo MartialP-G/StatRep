@@ -1,9 +1,109 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
 \usepackage[margin=1in]{geometry}
-\usepackage[color]{statrep}
+\usepackage[utf8]{inputenc}
+\usepackage[SASmode=Server,figname=Illustration]{../statrep}
 
 \begin{document}
 
+
+This document is named \texttt{testcases.tex}. 
+It contains the complete \textit{Getting Started}
+example from the \textit{StatRep User's Guide}.
+You can generate the final PDF document \texttt{testcases.pdf} as follows:
+
+\begin{description}
+	\item[Generate the SAS program]\mbox{}\newline
+	Compile this document with \texttt{pdflatex}.
+	The \texttt{StatRep} package automatically generates a SAS program from
+	the document source. The program is named
+	\texttt{example\_SR.sas} and it is created in the current directory.
+	
+	\item[Capture the SAS outputs]\mbox{}\newline
+	Run the SAS program \texttt{example\_SR.sas}. 
+	The SAS working directory must be the directory that contains this document.
+	
+	\item[Create the final PDF]\mbox{}\newline
+	Compile this document with \texttt{pdflatex} once more. The outputs that SAS generated
+	in the preceding step are now included in the final PDF \texttt{example.pdf}.
+\end{description}
+
+The code in the \texttt{Datastep} environment is written
+unchanged to the generated SAS program.
+
+\begin{Datastep}
+	proc format;
+	value $sex 'F' = 'Female' 'M' = 'Male';
+	data one;
+	set sashelp.class;
+	format sex $sex.;
+	run;
+\end{Datastep}
+
+
+Example of transfert of SAS parameters or results to \LaTeX :
+
+\begin{Sascode}
+	data test;
+	mydatea = '01JAN2024'd;
+	mydateb = '01JAN2024'd;
+	smallnum = 0.00523;
+	mediunnum = 1234.56;
+	largenum = 456789.12;
+	verylarge = 12345678.90;
+	%STATREPResults(mydatea, WEEKDATE.);
+	output;
+	run;
+	
+	data _null_;
+	set test (drop=mydatea); *don''t replace mydatea;
+	%STATREPAllResults();
+	run;
+\end{Sascode}
+
+Mydate (a) is equal \mydatea, (b) is equal to \mydateb{} and large numerical value is equal to \largenum.
+
+
+The code in the \texttt{Sascode} environment is parsed before it is
+written to the generated SAS program. For example, lines that begin with the string
+\texttt{\%*;} are written to the SAS program and are not displayed in the 
+final document. The other lines in this example are written to the program 
+and are displayed in the final document.
+
+The first line of the following code block can be seen only
+in the \LaTeX\ source file and in the generated SAS program. 
+The line insures that ODS Graphics are enabled.
+
+\begin{Sascode}[store=REGa]
+	%*;	OPTIONS MPRINT MLOGIC SYMBOLGEN;
+	%*; ods graphics on;
+	%startlog(nameoflog)
+	proc reg;
+	model weight = height age;
+	run;
+	%endlog(store=0,range=_n_ <= 10)
+\end{Sascode}
+
+The \texttt{Listing} and \texttt{Graphic} tags convey information to
+\LaTeX\ and to SAS. The tags specify the names of the output files to
+insert into the document and the captions for the output.
+Additionally, they specify the names of the output files to create
+and which ODS objects to capture.
+
+\Listing[store=REG,dest=latex,
+caption={Regression Analysis LaTeX}]{REGa}
+
+\Graphic[store=REG, 
+caption={Graphs for Regression Analysis}]{REGb}
+
+\Listing[store=REG,dest=listing,
+caption={Regression Analysis listing}]{REGc}
+In this short example only the defaults are used. That is, all output
+objects are selected and displayed.
+
+\Listing[caption={Log de la proc reg}]{nameoflog}
+
+
+\section{More Cases}
 \begin{Datastep}
 title 'no options';
 data one;

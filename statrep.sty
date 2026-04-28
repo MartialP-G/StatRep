@@ -10,23 +10,23 @@
 %%             generates the SAS results used in the source document.
 %%             The package helps to support reproducible research.
 %% 
-%% E-mail: tim.arnold@sas.com
-%% modified Martial Phélippé-Guinvarc'h - Path Resolution Mode
+%% E-mail: Martial.Phelippe-GuinvarcH@univ-lemans.fr
+%% 
 %% ----------------------------------------------------------------
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2025/11/26 v1.08 The statrep package - Path Resolution Mode SASServer/SASWorkstation and encoding]
+\ProvidesPackage{statrep}[2026/04/28 v2.0 The statrep package]
+
 \RequirePackage{verbatim}
 \RequirePackage{graphicx}
 \RequirePackage{ifthen}
 \RequirePackage{calc}
-\RequirePackage{etoolbox} % Need for string comparison (ifstrequal)
+\RequirePackage{etoolbox}
 \RequirePackage{xkeyval}
-\newif\ifSASServer %add MPG
+\newif\ifSASServer
 \SASServerfalse % Default is Workstation
-% Define the ‘SASmode’ key for the ‘statrep’ package
 \DeclareOptionX{SASmode}{\setkeys{statrep}{SASmode=#1}}
 \define@key{statrep}{SASmode}{%
-  \ifstrequal{#1}{Server}{% if value is 'Serveur'
+  \ifstrequal{#1}{Server}{% if value is 'Server'
     \SASServertrue
     \PackageInfo{statrep}{Mode SAS: Serveur (utilise \string&\string_SASPROGRAMFILE).}
   }{% If value is not 'Serveur', we control if it is 'WorkStation'
@@ -50,29 +50,29 @@
 \DeclareOptionX{figname}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \DeclareOptionX{resetby}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \ProcessOptionsX
+\providecommand{\SR@encoding}{utf-8}
 \def\statrep@map@sas@encoding#1{%
  \def\SR@encoding{utf-8}
- \ifstrequal{#1}{utf8}{\def\SR@encoding{utf-8}}
- \ifstrequal{#1}{utf8x}{\def\SR@encoding{utf-8}}
-%  latin1, latin9, ansinew, etc. is mapped to wlatin1
- \ifstrequal{#1}{latin1}{\def\SR@encoding{wlatin1}}%
- \ifstrequal{#1}{latin9}{\def\SR@encoding{wlatin1}}%
- \ifstrequal{#1}{ansinew}{\def\SR@encoding{wlatin1}}%
+ \ifstrequal{#1}{utf8}{\def\SR@encoding{utf-8}}{}%
+ \ifstrequal{#1}{utf8x}{\def\SR@encoding{utf-8}}{}%
+ \ifstrequal{#1}{latin1}{\def\SR@encoding{wlatin1}}{}%
+ \ifstrequal{#1}{latin9}{\def\SR@encoding{wlatin1}}{}%
+ \ifstrequal{#1}{ansinew}{\def\SR@encoding{wlatin1}}{}%
 }
 \AtBeginDocument{%
 \@ifpackageloaded{inputenc}{%
       \statrep@map@sas@encoding{\inputencodingname}%
-      \PackageInfo{statrep}{Encodind LaTeX ({\inputencodingname}) detected and mapped to SAS: 
-	  \SR@encoding.}
+      \PackageInfo{statrep}{Encodind LaTeX ({\inputencodingname}) detected and mapped to SAS:
+      \\SR@encoding.}
     }{%
-      % Sinon, on garde le défaut utf-8.
-      \PackageInfo{statrep}{inputenc unfund. Default SAS encoding: \SR@encoding.}
-    }
+      % else, default utf-8 is retained.
+      \PackageInfo{statrep}{inputenc unfund. Default SAS encoding: \\SR@encoding utf-8.}
+      }
 }
 \IfFileExists{sas.sty}
   {\RequirePackage{sas}}
   {\relax}
-\IfFileExists{\jobname _VarSAStoTex.tex}{\input{\jobname _VarSAStoTex.tex}}{}
+\IfFileExists{\jobname _VarSAStoTex.tex}{\input{\jobname _VarSAStoTex.tex}}{} 
 \RequirePackage{longfigure}
 \ifSR@generate\def\SR@writepgm{\immediate\write}
 \else\let\SR@writepgm\@gobbletwo
@@ -92,6 +92,7 @@
 \newcounter{SR@totallines}\setcounter{SR@totallines}{0}
 \newcounter{SR@multifilecount}\setcounter{SR@multifilecount}{0}
 \newboolean{SR@multifile}\setboolean{SR@multifile}{false}
+
 \begingroup\catcode`\#=12\gdef\SR@hashchar{#}\endgroup
 \define@boolkeys{SR}[SR@]{display,program,continued}[true]{}
 \define@cmdkeys{SR}[SR@]{caption,first,last}{}
@@ -112,14 +113,14 @@
    height   = \@empty, pagesize = \@empty}{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Edit this line to point to the location of the StatRep macros.
-\def\SRmacropath{\SRrootdir/statrep_macros.sas} %Modified MPG
+\def\SRmacropath{\SRrootdir/statrep_macros.sas}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%    The following statements define line size, page size, graphic resolution,
 %%    and also specify the default ODS output style:
 \ifSASServer
-	  \def\SRrootdir{&currentpath}
-	\else
-		\def\SRrootdir{.}
+\def\SRrootdir{&currentpath}
+\else
+\def\SRrootdir{.}
 \fi
 \def\SRlinesize{80}
 \def\SRpagesize{500}
@@ -199,16 +200,15 @@
   \SR@writepgm\SR@program@stream{\@percentchar IF \@percentchar index(&SAStoTexname,_SR) \@percentchar then \@percentchar DO;}
   \SR@writepgm\SR@program@stream{\@percentchar LET SAStoTexname=\@percentchar substr(&SAStoTexname,1,\@percentchar index(&SAStoTexname,_SR)-1);}
   \SR@writepgm\SR@program@stream{\@percentchar END;}
-	\SR@writepgm\SR@program@stream{\@percentchar let currentpath = \@percentchar substr(&fullpath, 1, \@percentchar length(&fullpath) -}
-	\SR@writepgm\SR@program@stream{   \@percentchar length(\@percentchar scan(&fullpath, -1, '/\\'))-1 );} 
-	\SR@writepgm\SR@program@stream{\@percentchar put &fullpath &currentpath;}
-	\SR@writepgm\SR@program@stream{\@percentchar let rc = \@percentchar sysfunc(dlgcdir(&currentpath));}
+  \SR@writepgm\SR@program@stream{\@percentchar let currentpath = \@percentchar substr(&fullpath, 1, \@percentchar length(&fullpath) -}
+  \SR@writepgm\SR@program@stream{\@percentchar length(\@percentchar scan(&fullpath, -1, '/\\'))-1 );}
+  \SR@writepgm\SR@program@stream{\@percentchar put &fullpath &currentpath;}
+  \SR@writepgm\SR@program@stream{\@percentchar let rc = \@percentchar sysfunc(dlgcdir(&currentpath));}
   \SR@writepgm\SR@program@stream{\@percentchar LET SAStoTexname = &SAStoTexname._VarSAStoTex.tex;}
   \SR@writepgm\SR@program@stream{\@percentchar put &SAStoTexname;}
   \SR@writepgm\SR@program@stream{ FILENAME outtex "&SAStoTexname" ENCODING="utf-8";}
   \SR@writepgm\SR@program@stream{ DATA _NULL_; FILE outtex LRECL=32767; RUN;}
   \SR@writepgm\SR@program@stream{ FILENAME outtex CLEAR;}
-
   \SR@writepgm\SR@program@stream{\@percentchar include "\SRrootdir/\SRpreamblename" /nosource;}
   \SR@writepgm\SR@program@stream{/* Remove all output files. */}
   \SR@writepgm\SR@program@stream{\SRsasprogramline}
@@ -558,6 +558,7 @@
       \endlongfigure\egroup%
     \unsloppy%
 }
+%%
 %% Copyright (C) 2015 by SAS Institute Inc. <tim.arnold@sas.com>
 %% 
 %% This work consists of the files

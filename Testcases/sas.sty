@@ -1,0 +1,1003 @@
+﻿
+\RequirePackage[T1]{fontenc}
+\RequirePackage{times}
+\RequirePackage{fancyvrb}
+\RequirePackage{array}
+\RequirePackage{graphicx}
+
+\newbox\sas@fig
+\newlength\sas@figwidth
+
+\newif\ifsas@color
+\sas@colorfalse
+
+\DeclareOption{color}{\sas@colortrue}
+\ProcessOptions
+
+\def\sasSaftercaption{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSbatch{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSbeforecaption{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSbody{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSbodydate{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSbycontentfolder{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+}
+\def\sasSbyline{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSbylinecontainer{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScaption{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScell{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScontainer{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScontentfolder{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+}
+\def\sasScontentitem{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+}
+\def\sasScontentproclabel{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScontentprocname{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScontents{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScontentsdate{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScontenttitle{%
+   \footnotesize%
+   \bfseries%
+   \itshape%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasScontinued{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSdata{%
+   \footnotesize%
+   \sffamily%
+}
+\def\sasSdataemphasis{%
+   \footnotesize%
+   \sffamily%
+}
+\def\sasSdataemphasisfixed{%
+   \footnotesize%
+   \itshape%
+   \ttfamily%
+}
+\def\sasSdataempty{%
+   \footnotesize%
+   \sffamily%
+}
+\def\sasSdatafixed{%
+   \footnotesize%
+   \ttfamily%
+}
+\def\sasSdatastrong{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSdatastrongfixed{%
+   \footnotesize%
+   \bfseries%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSdate{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSdocument{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSerrorbanner{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSerrorcontent{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSerrorcontentfixed{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSextendedpage{%
+   \footnotesize%
+   \itshape%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfatalbanner{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfatalcontent{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfatalcontentfixed{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfolderaction{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+}
+\def\sasSfooter{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfooteremphasis{%
+   \footnotesize%
+   \itshape%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfooteremphasisfixed{%
+   \footnotesize%
+   \itshape%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfooterempty{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfooterfixed{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfooterstrong{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSfooterstrongfixed{%
+   \footnotesize%
+   \bfseries%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSframe{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSgraph{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSheader{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSheaderemphasis{%
+   \footnotesize%
+   \itshape%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{0.84,0.85,0.82}%
+}
+\def\sasSheaderemphasisfixed{%
+   \footnotesize%
+   \itshape%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{0.84,0.85,0.82}%
+}
+\def\sasSheaderempty{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSheaderfixed{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSheadersandfooters{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSheaderstrong{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{0.84,0.85,0.82}%
+}
+\def\sasSheaderstrongfixed{%
+   \footnotesize%
+   \bfseries%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{0.84,0.85,0.82}%
+}
+\def\sasSheadingb{%
+   \sffamily%
+}
+\def\sasSheadingc{%
+   \sffamily%
+}
+\def\sasSheadingd{%
+   \sffamily%
+}
+\def\sasSheadinge{%
+   \sffamily%
+}
+\def\sasSheadingf{%
+   \sffamily%
+}
+\def\sasSheadingg{%
+   \sffamily%
+}
+\def\sasSindex{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSindexaction{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+}
+\def\sasSindexitem{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+}
+\def\sasSindexprocname{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSindextitle{%
+   \footnotesize%
+   \bfseries%
+   \itshape%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlayoutcontainer{%
+}
+\def\sasSlayoutregion{%
+}
+\def\sasSlinecontent{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlist{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistba{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistc{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistd{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSliste{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistf{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistg{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlisth{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlisti{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistj{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitem{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitemba{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitemc{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitemd{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistiteme{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitemf{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitemg{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitemh{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitemi{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSlistitemj{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSnote{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSnotebanner{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSnotecontent{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSnotecontentfixed{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSoutput{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSpageno{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSpages{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSpagesdate{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSpagesitem{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+}
+\def\sasSpagesproclabel{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSpagesprocname{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSpagestitle{%
+   \footnotesize%
+   \bfseries%
+   \itshape%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSparagraph{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSparskip{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+}
+\def\sasSprepage{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSproctitle{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSproctitlefixed{%
+   \footnotesize%
+   \bfseries%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowfooter{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowfooteremphasis{%
+   \footnotesize%
+   \itshape%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowfooteremphasisfixed{%
+   \footnotesize%
+   \itshape%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowfooterempty{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowfooterfixed{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowfooterstrong{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowfooterstrongfixed{%
+   \footnotesize%
+   \bfseries%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowheader{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowheaderemphasis{%
+   \footnotesize%
+   \itshape%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowheaderemphasisfixed{%
+   \footnotesize%
+   \itshape%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowheaderempty{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowheaderfixed{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowheaderstrong{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSrowheaderstrongfixed{%
+   \footnotesize%
+   \bfseries%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooter{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooterba{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooterc{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooterd{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfootere{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooterf{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooterg{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooterh{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooteri{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemfooterj{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitle{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitleba{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitlec{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitled{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitlee{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitlef{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitleg{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitleh{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitlei{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystemtitlej{%
+   \small%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSsystitleandfootercontainer{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasStable{%
+}
+\def\sasStitleandnotecontainer{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasStitlesandfooters{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSusertext{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSwarnbanner{%
+   \footnotesize%
+   \bfseries%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSwarncontent{%
+   \footnotesize%
+   \sffamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+\def\sasSwarncontentfixed{%
+   \footnotesize%
+   \ttfamily%
+   \color[rgb]{0,0,0}%
+   \columncolor[rgb]{1,1,1}%
+}
+% Set cell padding
+\renewcommand{\arraystretch}{1.3}
+
+% Headings
+\newcommand{\sasheading}[3][c]{{%
+   \if#1r\flushright\else\if#1l\flushleft\else\centering\fi\fi%
+   {\csname sasS#2\endcsname #3}\mbox{}\\[0.1\baselineskip]%
+   \if#1r\endflushright\else\if#1l\endflushleft\else\fi\fi%
+}}
+
+\newcommand{\sasbyline}[2][c]{\sasheading[#1]{byline}{#2}}
+\newcommand{\sassystemtitle}[2][c]{\sasheading[#1]{systemtitle}{#2}}
+\newcommand{\sassystemfooter}[2][c]{\sasheading[#1]{systemfooter}{#2}}
+\newcommand{\sasproctitle}[2][c]{\sasheading[#1]{proctitle}{#2}}
+\newcommand{\sascaption}[2][l]{\marginpar[#1]{\fbox{\parbox{0.7in}{\sasScaption{#2}}}}}
+
+% Declare new verbatim type
+\DefineVerbatimEnvironment{sasverbatim}{BVerbatim}%
+                          {fontsize=\footnotesize,
+                           commandchars=\\\{\},
+                           formatcom=\sasSbatch}
+
+% Declare new column types
+\newcolumntype{S}[2]{>{\csname sasS#1\endcsname}#2}
+\newcolumntype{d}{r}
+
+% Set warning box style
+\newlength\notewidth
+\setlength\notewidth{4in}
+\newcommand*{\saswarn}[2][c]{\sasmsg{warn}{#1}{#2}}
+\newcommand*{\saserror}[2][c]{\sasmsg{error}{#1}{#2}}
+\newcommand*{\sasnote}[2][c]{\sasmsg{note}{#1}{#2}}
+\newcommand*{\sasfatal}[2][c]{\sasmsg{fatal}{#1}{#2}}
+\newcommand*{\sasmsg}[3]{%
+   \ifsas@color\let\columncolor\undefined\fi%
+   \begin{center}%
+   \begin{tabular}{ll}\hline%
+   \multicolumn{1}{|S{#1banner}{p{0.7in}}|}{#1} & %
+   \multicolumn{1}{|S{#1content}{p{\notewidth}}|}{#3{\newline}}\\\hline%
+   \end{tabular}%
+   \end{center}%
+   \ifsas@color\let\columncolor\sascolumncolor\fi%
+}
+
+\ifsas@color\RequirePackage{colortbl}\fi
+
+% Hack colortbl to allow \columncolor in macros
+\let\CT@extract@org\CT@extract
+\def\CT@extract{\futurelet\CT@NEXT\CT@extract@next}
+\def\CT@extract@next{%
+  \ifx\CT@NEXT\csname
+    \@ReturnAfterFi{%
+      \expandafter\expandafter\expandafter
+    }%
+  \fi
+  \CT@extract@org
+}
+\long\def\@ReturnAfterFi#1\fi{\fi#1}
+
+\ifsas@color
+
+   \newcommand{\foreground}[1]{\color[rgb]{#1}}
+   \newcommand{\sascolumncolor}[2][]{}
+   \let\columncolor\sascolumncolor
+   \newcommand{\documentforeground}[1]{\AtBeginDocument{\color[rgb]{#1}}}
+   \newcommand{\documentbackground}[1]{\AtBeginDocument{\pagecolor[rgb]{#1}}}
+   \def\sastable{\let\columncolor\undefined\tabular}
+   \def\endsastable{\endtabular\let\columncolor\sascolumncolor}
+   \def\stackedcell{\bgroup\renewcommand{\arraystretch}{1}\tabular}
+   \def\endstackedcell{\endtabular\egroup}
+
+\else
+
+   \providecommand{\foreground}[1]{}
+   \providecommand{\color}[2][]{}
+   \newcommand{\sascolumncolor}[2][]{}
+   \let\columncolor\sascolumncolor
+   \newcommand{\documentforeground}[1]{}
+   \newcommand{\documentbackground}[1]{}
+   \def\sastable{\tabular}
+   \def\endsastable{\endtabular}
+   \def\stackedcell{\bgroup\renewcommand{\arraystretch}{1}\tabular}
+   \def\endstackedcell{\endtabular\egroup}
+
+\fi
+
+%\let\sasgraph\includegraphics
+% Scale graphics so they always fit on the page
+\newcommand\sasgraph[2][]{%
+   \savebox{\sas@fig}{\includegraphics[#1]{#2}}%
+   \settowidth{\sas@figwidth}{\usebox{\sas@fig}}%
+   \ifthenelse{\lengthtest{\sas@figwidth > \textwidth}}{%
+      \resizebox{0.95\textwidth}{!}{\usebox{\sas@fig}}}{%
+      \usebox{\sas@fig}}
+}
+

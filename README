@@ -1,0 +1,214 @@
+ABOUT
+
+The StatRep package is a LaTeX package that provides two environments and
+two tags that work together to display your SAS code and results and to
+generate the SAS program that produces those results. The two environments
+(Datastep and Sascode) display SAS code. The two tags (Listing and Graphic)
+display SAS output.
+
+The generated SAS program includes calls to macros that use the SAS
+Output Delivery System (ODS) document to capture the output as external files.
+These SAS macros are included in this package (statrep_macros.sas).
+
+The package is available in two locations:
+
+   * http://support.sas.com/StatRepPackage  - Obsolet
+   * https://github.com/MartialP-G/StatRep
+   * http://mirror.ctan.org/macros/latex/contrib/statrep/
+
+The distribution(statrep.zip) consists of the following files:
+   README.txt            (this file)
+   statrep_macros.sas    SAS macro file
+   statrep_tagset.sas    SAS tagset and style for LaTeX tabular output
+   statrepmanual.pdf     StatRep Package User's Guide (pdf)
+   statrepmanual.tex     StatRep Package User's Guide (source)
+   quickstart.tex        Example and tutorial LaTeX file
+   statrep.dtx           Package source file
+   statrep.ins           Install file (for MikTeX Users)
+
+INSTALL
+
+Unzip the file statrep.zip to a temporary directory and
+perform the following steps:
+
+Step 1: Install the StatRep SAS Macros
+
+   Copy the file statrep_macros.sas to a local directory. If you have a
+   folder where you keep your personal set of macros, copy the file
+   there. Otherwise, create a directory such as C:\mymacros and copy
+   the file into that directory.
+
+Step 2: Install the StatRep LaTeX Package
+
+   If you are working with the MikTeX distribution on Windows and it is
+   configured to download and install packages automatically, you can
+   skip this step. Otherwise, see these instructions for installing
+   packages for MikTeX:
+   http://docs.miktex.org/manual/localadditions.html
+
+   The following instructions show how to install the StatRep package in the
+   TeXLive LaTeX distribution for your personal use. If you maintain a
+   system-wide LaTeX distribution and you want to make StatRep
+   available to all users, see more detailed information about how
+   to install LaTeX packages at
+   https://www.tug.org/texlive/doc/texlive-en/texlive-en.html#x1-440005.2
+
+   a)
+   Determine the location that LaTeX uses to load packages. From a
+   command-line prompt, give the following command:
+   kpsewhich -var-value=TEXMFHOME
+
+   The command will return the root directory name in which LaTeX can
+   find your personally installed packages.
+
+   b)
+   Create the directory if it does not exist and create the additional
+   subdirectories tex/latex/statrep
+   Your directory tree will have the following structure:
+      ---------------
+      root directory/  (given by kpsewhich command in 2a)
+         tex/
+            latex/
+              statrep/
+
+   d)
+   Copy the files statrep.dtx, statrepmanual.pdf, and statrepmanual.tex to
+   the statrep subdirectory. Your directory tree will have the following structure:
+      ---------------
+      root directory/  (given by kpsewhich command in 2a)
+         tex/
+            latex/
+                 statrep/
+                       statrep.dtx
+                       statrepmanual.pdf
+                       statrepmanual.tex
+      ---------------
+
+   e)
+   Change to the statrep directory and give the following command:
+   pdflatex statrep.dtx
+
+   The command creates several files, one of which is the configuration
+   file, statrep.cfg.
+
+Step 3: Let the StatRep Package Know the Location of the StatRep SAS Macros
+
+   Edit the statrep.cfg file generated in Step 2d so that the macro SRmacropath contains
+   the correct location of the macro file from step 1. For example, if
+   you copied the statrep_macros.sas file to a directory named 'C:\mymacros',
+   then you define macro \SRmacropath as follows:
+   \def\SRmacropath{c:/mymacros/statrep_macros.sas}
+
+   Note the use of the forward slash in the definition. Use the forward slash
+   as the directory name delimiter instead of the backslash, which is a special
+   character in LaTeX.
+
+EXPLORE
+
+   You can now test and experiment with the package. Create a working
+   directory and copy the file quickstart.tex into it.
+
+   To generate the quickstart document:
+    1) Compile the document with pdfLaTeX. You can use a LaTeX-aware
+      editor such as TeXworks, or you can use the command-line command 'pdflatex'.
+      This step generates the necessary SAS program that is needed to produce
+      the results. If the name of your document is myarticle.tex, the names of
+      the generated SAS programs will be myarticle_SR.sas and
+      myarticle_SR_preamble.sas by default.
+
+        myarticle_SR.sas: Begins with a call to the preamble SAS file, then
+          the cleaning subdirectory, and then the aggregate SAS code present
+          in the LaTeX file.
+        myarticle_SR_preamble.sas: Mainly contains custom variables (see the
+          customizable settings section) and a call to the statrep_macros.sas
+          macro file.
+
+   2) Execute the SAS program quickstart_SR.sas, which was automatically
+      created in the preceding step. This step generates the SAS
+      results that are requested in the quickstart document.
+
+   3) Recompile the document with pdfLaTeX. This step compiles the
+      quickstart document to PDF, this time including the SAS results
+      that are generated in the preceding step.
+
+      You might need to repeat this step so that LaTeX can re-
+      measure the listing outputs to ensure that they are framed properly.
+
+   Notes: You can make changes to the file with a LaTeX-aware editor
+          or with any plain-text editor such as NotePad or emacs.
+
+          You can read the StatRep User's Guide for complete usage details.
+          It is included in the file statrepmanual.pdf that you copied
+          in the installation step 2d.
+
+UNINSTALL
+
+   To uninstall the package, delete the statrep directory that you created
+   in the installation step 2d and remove the SAS macro file statrep_macros.sas
+   that you copied in Installation step 1.
+
+NOTE
+
+   StatRep now includes limited support for SAS ODS LaTeX output.
+   See the StatRep User's Guide for details.
+
+LICENSE
+
+statrep.dtx
+statrep_macros.sas
+statrep_tagset.sas
+statrepmanual.tex
+
+ -----------------------------------------------------------------
+ Copyright (c) 2015 SAS Institute Inc.
+ Copyright (c) 2026 Martial Phélippé-Guinvarc'h
+
+ This work may be distributed and/or modified under the
+ conditions of the LaTeX Project Public License, either version 1.3c
+ of this license or (at your option) any later version.
+ The latest version of this license is in
+   http://www.latex-project.org/lppl.txt
+-----------------------------------------------------------------
+ This work has the LPPL maintenance status 'maintained'.
+
+ The Current Maintainer of this work is Martial Phélippé-Guinvarc'h.
+ Contact: Martial dot Phelippe-GuinvarcH at univ-lemans dot fr
+
+ The original version was developed by Tim Arnold (SAS Institute).
+ This is an independent update and is not officially supported
+ by SAS Institute Inc.
+
+DESCRIPTION OF CHANGES (2026/04/28):
+ - Improved path resolution logic when using SASmode option.
+ - Added UTF-8 encoding support for SAS input files.
+ - Included new macros for automatic LaTeX export of SAS results
+   via specialized formats.
+-----------------------------------------------------------------
+ This work consists of the files statrep.dtx,
+ statrep_macros.sas,
+ statrep_tagset.sas
+ and the derived file statrep.ins and statrep.sty.
+-----------------------------------------------------------------
+
+REQUIREMENTS
+
+  pdfLaTeX typesetting engine 1.30 or later
+
+  LaTeX packages
+     verbatim, graphicx, ifthen, calc, etoolbox, xkeyval
+  SAS 9.2 or later
+
+See the StatRep User's Guide, included with this package, for complete details.
+
+This work consists of the files:
+   README (this file)
+   statrep_macros.sas
+   statrep_tagset.sas
+   statrepmanual.tex
+   statrepmanual.pdf
+   quickstart.tex
+   statrep.dtx
+      statrep.ins
+      statrep.pdf
+      statrep.sty
+      statrep.cfg

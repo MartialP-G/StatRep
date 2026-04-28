@@ -1,3 +1,44 @@
+----------------------------------------------------------------
+statrep.dtx
+statrep_macros.sas
+statrep_tagset.sas
+statrepmanual.tex
+
+Copyright (c) 2015 SAS Institute Inc.
+Copyright (c) 2026 Martial Phélippé-Guinvarc'h
+
+This work may be distributed and/or modified under the
+conditions of the LaTeX Project Public License, either version 1.3c
+of this license or (at your option) any later version.
+The latest version of this license is in
+  http://www.latex-project.org/lppl.txt
+and version 1.3c or later is part of all distributions of LaTeX
+version 2005/12/01 or later.
+
+This work has the LPPL maintenance status 'maintained'.
+
+The Current Maintainer of this work is Martial Phélippé-Guinvarc'h.
+Contact: Martial dot Phelippe-GuinvarcH at univ-lemans dot fr
+
+The original version was developed by Tim Arnold (SAS Institute).
+This is an independent update and is not officially supported
+by SAS Institute Inc.
+
+This work consists of the files:
+  statrep.dtx
+  statrep_macros.sas
+  statrep_tagset.sas
+  statrepmanual.tex
+  quickstart.tex
+and the derived files:
+  statrep.ins
+  statrep.sty
+  longfigure.sty
+  statrep.cfg
+  statrep.pdf
+  statrepmanual.pdf
+
+----------------------------------------------------------------
 The LaTeX Project Public License
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 

@@ -1530,25 +1530,47 @@ given extension to insure the directory exists and is empty of output files.;
 
 proc format;
     /* Format pour nombres < 100000 */
-    picture STATREPS
-        0-<100000='000 009,99' (decsep="," dig3sep=" ")
-        low-<0='000 009,99' (decsep="," dig3sep=" " prefix='-');
-    
+	picture STATREPS
+        1000-<100000='000~009,99' (decsep="," dig3sep=" ")
+        0-<1000='009,99' (decsep="," dig3sep=" ")
+        -1000-<0='009,99' (decsep="," dig3sep=" " prefix='-')
+        -100000-<-1000='000~009,99' (decsep="," dig3sep=" " prefix='-');
+	picture STATREPR
+        1000-<100000='000~009' (decsep="," dig3sep=" ")
+        0-<1000='009' (decsep="," dig3sep=" ")
+        -1000-<0='009' (decsep="," dig3sep=" " prefix='-')
+        -100000-<-1000='000~009' (decsep="," dig3sep=" " prefix='-');
+   
     /* Format pour nombres >= 100000 */
-    picture STATREPL
-        100000-high='000 000 009,99' (decsep="," dig3sep=" ")
-        low -< -100000='000 000 009,99' (decsep="," dig3sep=" " prefix='-');
+	picture STATREPL
+        1000000000-high='000~000~000~009,99' (decsep="," dig3sep=" ")
+        100000-<1000000000='000~000~009,99' (decsep="," dig3sep=" ")
+        1000-<100000='000~009,99' (decsep="," dig3sep=" ")
+        0-<1000='009,99' (decsep="," dig3sep=" ")
+        -1000-<0='009,99' (decsep="," dig3sep=" " prefix='-')
+        -100000-<-1000='000~009,99' (decsep="," dig3sep=" " prefix='-')
+        -1000000000-<-100000='000~000~009,99' (decsep="," dig3sep=" " prefix='-')
+        low -< -1000000000='000~000~000~009,99' (decsep="," dig3sep=" " prefix='-');
+	picture STATREPK
+        1000000000-high='000~000~000~009' (decsep="," dig3sep=" ")
+        100000-<1000000000='000~000~009' (decsep="," dig3sep=" ")
+        1000-<100000='000~009' (decsep="," dig3sep=" ")
+        0-<1000='009' (decsep="," dig3sep=" ")
+        -1000-<0='009' (decsep="," dig3sep=" " prefix='-')
+        -100000-<-1000='000~009' (decsep="," dig3sep=" " prefix='-')
+        -1000000000-<-100000='000~000~009' (decsep="," dig3sep=" " prefix='-')
+        low -< -1000000000='000~000~000~009' (decsep="," dig3sep=" " prefix='-');
     
     /* Format pour pourcentages/petits nombres */
     picture STATREPC 
-        other='0 009,9900' (mult=1000000);
+        other='0~009,9900' (mult=1000000);
     
     /* Format date dd/mm/yyyy */
     picture STATREPD
         low-high='%0d/%0m/%Y' (datatype=date);
 run;
 %macro STATREPResults(variable,format);
- filename outtex "&SAStoTexname" encoding="utf-8" ;
+ filename outtex "&SAStoTexname" encoding="utf-8" mod;
  file outtex termstr=nl mod;
  put "\def\&variable{" &variable &format '}';
 %mend;
@@ -1570,28 +1592,37 @@ run;
             vformat(_all) in ('BEST','F','') and a ne '') then do;
             /* Vérification additionnelle : valeur dans la plage des dates SAS */
             if _all >= -109572 and _all <= 157377 then do;
-                put '\def \' a '{' _all STATREPD. '}';
+                put '\def\' a '{' _all STATREPD. '}';
             end;
             else do;
                 /* Ce n'est pas une date, traiter comme nombre normal */
                 if abs(_all) >= 100000 then
-                    put '\def \' a '{' _all STATREPL. '}';
+                    put '\def\' a '{' _all STATREPL. '}';
                 else if abs(_all) < 1 and _all ne . then
-                    put '\def \' a '{' _all STATREPC. '}';
+                    put '\def\' a '{' _all STATREPC. '}';
                 else if _all ne . then
-                    put '\def \' a '{' _all STATREPS. '}';
+                    put '\def\' a '{' _all STATREPS. '}';
             end;
         end;
         /* Sinon traiter comme nombre normal */
         else do;
-            if abs(_all) >= 100000 then
-                put '\def \' a '{' _all STATREPL. '}';
+            if abs(_all) >= 100000 then do;
+				if mod(_all,1)=0 then
+                put '\def\' a '{' _all STATREPK. '}';
+				else
+                put '\def\' a '{' _all STATREPL. '}';
+				end;
             else if abs(_all) < 1 and _all ne . then
-                put '\def \' a '{' _all STATREPC. '}';
-            else if _all ne . then
-                put '\def \' a '{' _all STATREPS. '}';
+                put '\def\' a '{' _all STATREPC. '}';
+            else if _all ne . then do;
+				if mod(_all,1)=0 then
+                put '\def\' a '{' _all STATREPR. '}';
+				else
+                put '\def\' a '{' _all STATREPS. '}';
+				end;
         end;
     end;
+DROP A FMT;
 %mend;
 
 %MACRO STATREPMACROVAR(variable);
@@ -1601,3 +1632,90 @@ DATA _NULL_;
 ;RUN;
 %MEND;
 
+
+PROC IML;
+START STATREPFormatValue(value, varName);
+    ligne = "";
+
+    IF value = . THEN RETURN(ligne);
+
+    IF value >= -109572 & value <= 157377 & MOD(value,1)=0
+       & INDEX(UPCASE(varName),'DATE')>0 THEN
+        ligne = STRIP(PUTN(value, 'STATREPD.'));
+
+    ELSE IF ABS(value) >= 100000 THEN DO;
+        IF MOD(value,1)=0 THEN
+            ligne = STRIP(PUTN(value, 'STATREPK.'));
+        ELSE
+            ligne = STRIP(PUTN(value, 'STATREPL.'));
+    END;
+
+    ELSE IF ABS(value) < 1 THEN
+        ligne = STRIP(PUTN(value, 'STATREPC.'));
+
+    ELSE DO;
+        IF MOD(value,1)=0 THEN
+            ligne = STRIP(PUTN(value, 'STATREPR.'));
+        ELSE
+            ligne = STRIP(PUTN(value, 'STATREPS.'));
+    END;
+
+    RETURN(ligne);
+FINISH;
+
+START STATREPResult(variable);
+    varName = PARENTNAME("variable");
+    n = NROW(variable);
+    p = NCOL(variable);
+	v=variable;
+IF p=1 & n>1 THEN DO; V=v`;p=n; n=1; END;
+    latex = "";
+
+DO i = 1 TO n;
+    row = "";
+    DO j = 1 TO p;
+        cell = STATREPFormatValue(v[i,j], varName);
+        IF cell ^= "" THEN DO;
+            IF j > 1 THEN row = row + " & ";
+            row = row + cell;
+        END;
+    END;
+    IF i > 1 THEN latex = latex + " \\ ";
+    latex = latex + row;
+END;
+IF n=1 & p=1 THEN
+    ligne = "\def\" + STRIP(varName) + " {" + latex + "}";
+
+ELSE DO;
+    tabspec = "*{" + STRIP(CHAR(p)) + "}{c}";
+    ligne = "\def\" + STRIP(varName)
+          + " {\begin{center}\begin{tabular}{"
+          + tabspec + "}"
+          + latex
+          + "\end{tabular}\end{center}}";
+END;
+
+EDIT WORK._STATREP_TEMP_;
+APPEND FROM ligne;
+CLOSE WORK._STATREP_TEMP_;
+FINISH;
+
+STORE MODULE=( STATREPResult STATREPFormatValue );
+QUIT;
+
+
+DATA WORK._STATREP_TEMP_;
+LENGTH LIGNE $256;
+STOP;
+RUN;
+QUIT;
+
+%MACRO STATREPIMLWrite();
+DATA _NULL_;
+    SET WORK._STATREP_TEMP_;
+    FILENAME outtex "&SAStoTexname" ENCODING="utf-8";
+    FILE outtex TERMSTR=NL MOD;
+    PUT LIGNE;
+RUN;
+
+%MEND STATREPIMLWrite;

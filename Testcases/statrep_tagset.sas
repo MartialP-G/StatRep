@@ -1,3 +1,4 @@
+﻿ODS PATH WORK.TEMPLAT(UPDATE) SASHELP.TMPLMST(READ);
 proc template;
    define style styles.StatRep;
       parent = styles.statistical;
